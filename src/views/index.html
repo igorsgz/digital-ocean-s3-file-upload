@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload images</title>
+  </head>
+  <body>
+    <h1>Envio de imagens</h1>
+
+    <input type="file" multiple="multiple" name="files" id="files" />
+    <br />
+    <br />
+    <label for="folderName">Nome da pasta:</label>
+    <input type="text" id="folderName" />
+    <br />
+    <br />
+    <button id="postButton">Enviar</button>
+
+    <p id="loading" style="display: none">Carregando</p>
+
+    <script>
+      document
+        .querySelector("#postButton")
+        .addEventListener("click", async function (file) {
+          try {
+            document.getElementById("postButton").disabled = true;
+            document.getElementById("loading").style.display = "block";
+
+            const inputFiles = document.getElementById("files").files;
+            const folderName = document.getElementById("folderName").value;
+
+            let formdata = new FormData();
+
+            for (const file of inputFiles) {
+              formdata.append("files", file);
+            }
+
+            var requestOptions = {
+              method: "POST",
+              body: formdata,
+            };
+
+            let route = "/upload";
+            if (folderName) {
+              route = `/upload/folder/${folderName}`;
+            }
+
+            const response = await fetch(route, requestOptions);
+
+            console.log(JSON.parse(await response.text()));
+            alert("enviado com sucesso");
+          } catch (error) {
+            alert("Erro ao enviar");
+            console.error(error);
+          } finally {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("postButton").disabled = false;
+          }
+        });
+    </script>
+  </body>
+</html>
